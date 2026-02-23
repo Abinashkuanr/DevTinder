@@ -1,32 +1,25 @@
-const express = require('express');
-
+const express = require("express");
 const app = express();
 
-app.use("/user",(req,res,next)=>{
-    console.log("Handling the route user1");
-    // res.send("Response1");
+const { adminAuth,userAuth  } = require("./middlewares/auth");
 
-    next();
-},
-(req,res,next)=>{
-       console.log("Handling the route user2");
-    // res.send("Response2");
-    next();
-},
+// Apply middleware only to /admin routes
+app.use("/admin", adminAuth);
 
-(req,res,next)=>{
-       console.log("Handling the route user3");
-    // res.send("Response3");
-    next();
-},
-(req,res,next)=>{
-       console.log("Handling the route user4");
-    res.send("Response4");
-  
-})
+// Normal route (no middleware)
+app.get("/user", userAuth, (req, res) => {
+    res.send("User Data Sent");
+});
+
+// Admin routes (middleware will run first)
+app.get("/admin/getAllData", (req, res) => {
+    res.send("All Data Sent");
+});
+
+app.get("/admin/deleteUser", (req, res) => {
+    res.send("Deleted a user");
+});
 
 app.listen(7000, () => {
-
-   console.log("Server is Listening");
-
+    console.log("Server is Listening on port 7000");
 });
